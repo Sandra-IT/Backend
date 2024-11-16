@@ -6,7 +6,7 @@
     "express-session": "^1.18.0",
     "md5": "^2.3.0",
     "mysql": "^2.18.1",
-    "mysql2": "^3.11.3"
+    "mysql2": "^3.11.4"
   },
   "scripts": {
     "start": "node app.js",

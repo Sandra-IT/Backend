@@ -50,14 +50,16 @@ const express = require("express");
 const cors = require("cors");
 const session = require("express-session");
 const connection = require("./conexion");
+const bodyParser = require("body-parser");
 
 const md5 = require("md5");
 const bcrypt = require("bcrypt");
 const login = require("./login");
-const { obtenerUsuarios, eliminarUsuario } = require("./usuarios");
-const validar = require("./validar");
-const bodyParser = require("body-parser");
 const registerUser = require("./registerUser");
+const { obtenerUsuarios, eliminarUsuario, modificarUsuario } = require("./usuarios");
+const validar = require("./validar");
+
+const pool = require('./conexion'); // Importa el pool de conexiones
 
 const app = express();
 const port = 4000;
@@ -65,17 +67,20 @@ const saltRounds = 10;
 
 // Configuración de CORS
 const corsOptions = {
-  origin: "http://localhost:5173", // Cambia esto si tu frontend está en otro puerto
+  origin: 'http://localhost:5173', // Cambia esto si tu frontend está en otro puerto
   credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
 };
+
+app.use(cors());
+
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(
   session({
-    secret: "asdlfkfso3234o23lsdflasdfasdfoasdf",
+    secret: 'asdlfkfso3234o23lsdflasdfasdfoasdf',
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -95,31 +100,35 @@ app.use(
 //});
 
 //RUTAS
-app.get("/", (req, res) => {
+app.get('/', (req, res) => {
   res.send("Hello World!");
 });
 
 //ruta de inicio de sesion
-app.get("/login", login);
+app.get('/login', login);
 
 //ruta para validar si el usuario esta logueado
-app.get(" /validar", validar);
+app.get(' /validar', validar);
 
 //ruta para obtener usuarios
-app.get("/usuarios", obtenerUsuarios);
+app.get('/usuarios', obtenerUsuarios);
 
 //para borrar usuarios
-app.delete("/usuarios", eliminarUsuario);
+app.delete('/eliminar-usuarios/:id', eliminarUsuario);
 
-app.get("/conversor", (req, res) => {
+app.put('/usuarios/:id', modificarUsuario);
+
+
+app.get('/conversor', (req, res) => {
   res.json({ info: "Resultado de la conversión" });
 });
 
-app.post("/login", login);
+// Ruta para login (POST)
+app.post('/login', login);
 
 app.use(bodyParser.urlencoded({ extended: true })); // Para manejar datos del formulario
 
-app.post("/register", registerUser); // Manejar la solicitud de registro
+app.post('/register', registerUser); // Manejar la solicitud de registro
 
 app.listen(port, () => {
   console.log(`Servidor corriendo en el puerto ${port}`);

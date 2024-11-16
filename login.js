@@ -1,32 +1,29 @@
 const { query } = require("./conexion");
 const bcrypt = require("bcrypt");
-const saltRounds = 10;
 
-//ruta de inicio de sesion
+
+// Ruta de inicio de sesión
 const login = async (req, res) => {
   const datos = req.body;
-  //const datos = req.query;
-  // const { username, password } = req.body;
-  // A simple SELECT query
+
   try {
     const [results, fields] = await query(
-      "SELECT * FROM usuarios WHERE correo = ? and clave = ?",
-      [datos.correo, datos.clave]
+      'SELECT * FROM usuarios WHERE correo =? AND clave = ?',
+      [datos.correo, datos.clave] // Solo estamos buscando por correo
     );
     console.log(datos.correo, datos.clave, results);
+    
     if (results.length > 0) {
-      res.status(200).send("Inicio de Sesión correcto");
+      return res.status(200).send("Bienvenido");
     } else {
-      res.status(401).send("Datos Incorrectos");
+      return res.status(401).send("Datos Incorrectos");
     }
 
-    console.log(results); // results contains rows returned by server
-    console.log(fields); // fields contains extra meta data about results, if available
   } catch (err) {
-    //console.log(err);
-    console.error("Error en la consulta:", error);
+    console.error("Error en la consulta:", err);
     return res.status(500).send("Error en el servidor");
   }
 };
 
 module.exports = login;
+
